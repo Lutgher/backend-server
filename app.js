@@ -1,8 +1,20 @@
 const express=require('express');
 const mongoose=require('mongoose');
+const bodyParser=require('body-parser');
+
 
 //inicializar varaibles
 let app=express();
+
+//configuración del body parser
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+//Importando rutas
+const appRoutes=require('./routes/app');
+const usuarioRoutes=require('./routes/usuario');
+const loginRoutes=require('./routes/login');
+
 //conexión a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/cajaDB',(err, res)=>{
     if(err) throw err;
@@ -12,12 +24,10 @@ mongoose.connection.openUri('mongodb://localhost:27017/cajaDB',(err, res)=>{
 });
 
 //RUTAS
-app.get('/', (req, res, next)=>{
-    res.status(200).json({
-        Ok: true,
-        mensaje:'Petición realizada correctamente'
-    });
-});
+
+app.use('/usuario',usuarioRoutes);
+app.use('/login',loginRoutes);
+app.use('/',appRoutes);
 
 //Escuchar peticiones
 app.listen(3000,()=>{
